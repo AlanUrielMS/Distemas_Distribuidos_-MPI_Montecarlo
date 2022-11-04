@@ -1,4 +1,4 @@
-#Version final
+#Version final para github
 from random import uniform
 from time import sleep
 from mpi4py import MPI
@@ -34,8 +34,10 @@ if myrank == 0:
     print("Soy el proceso ",str(myrank), " de ",str(size))
     sleep(8)
     x=unif(lim_inf,lim_sup,cant_num)
-    comm.send(cant_num, dest=1)
-    comm.send(x, dest=1)
+    for i in range(1,size):    
+        comm.send(cant_num, dest=i)
+        comm.send(x, dest=i)
+    #Recibe datos de los procesos esclavos    
     resultado = comm.recv(source=1)
     print("El resultado de la integral es: ")
     #resultado = (lim_sup-lim_inf)*suma/cant_num
@@ -56,6 +58,7 @@ else:
         suma = suma +1/(1+np.sinh(2*valx[j])* (np.log(valx[j]))**2)    
     resultado_proceso = (lim_sup-lim_inf)*suma/num_recv
     comm.send(resultado_proceso, dest=0)
+    print("==Soy el proceso ",str(myrank), " y ya le envie mi resultado al proceso maestro==")
     
     #Enviarle el resultado al proceso maestro
     # print("El resultado de la integral del proceso es: ",resultado_proceso)
